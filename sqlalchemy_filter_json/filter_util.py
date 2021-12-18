@@ -1,7 +1,7 @@
 from sqlalchemy import Numeric, nullslast
 
 from sqlalchemy_filter_json.operators import Operator
-from sqlalchemy_filter_json.validators import FilterRequest, Filter
+from sqlalchemy_filter_json.validators import FilterRequest, Filter, SortRequest, SortDirection
 
 
 def filter_apply(query, entity, obj: FilterRequest = None):
@@ -44,6 +44,9 @@ def filter_apply(query, entity, obj: FilterRequest = None):
         "sort": [...]
     }
     """
+    if obj.filter is None:
+        return query
+
     for f_obj in obj.filter:
         # Hold the root node
         root_node = f_obj.node
@@ -80,7 +83,7 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     return query
 
 
-def sort_apply(query, entity, obj: dict = None):
+def sort_apply(query, entity, obj: SortRequest = None):
     """
     Example object
 
@@ -110,29 +113,32 @@ def sort_apply(query, entity, obj: dict = None):
         ]
     }
     """
-    if "sort" not in obj.keys():
+    # if "sort" not in obj.keys():
+    #     return query
+    if obj.sort is None:
         return query
 
-    sort_obj = obj["sort"]
+    sort_obj = obj.sort
     if len(sort_obj) != 0:
         for sort_request in sort_obj:
-            node_sort = sort_request["node"]
+            node_sort = sort_request.node
             sort_split = node_sort.split('.')
             if len(sort_split) == 0:
-                sort_stmt = getattr(entity, sort_request["json_field"])[sort_request["node"]]
+                sort_stmt = getattr(entity, sort_request.json_field)[sort_request.node]
             else:
-                sort_stmt = getattr(entity, sort_request["json_field"])
+                sort_stmt = getattr(entity, sort_request.json_field)
                 for s in sort_split:
                     sort_stmt = sort_stmt[s]
 
-            direction = sort_request["direction"]
-            nulls_last = sort_request["nullsLast"]
+            direction = sort_request.direction
+            nulls_last = sort_request.nullsLast
 
-            if direction is None or direction == "asc":
+            if direction is None or direction == SortDirection.ASC:
                 sort_stmt = sort_stmt.asc()
-            elif direction == "desc":
+            elif direction == SortDirection.DESC:
                 sort_stmt = sort_stmt.desc()
             else:
+                # TODO redundant - delete it?
                 raise Exception('Invalid `{}` order by direction'.format(direction))
 
             if nulls_last is not None and nulls_last:
