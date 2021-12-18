@@ -1,9 +1,10 @@
 from sqlalchemy import Numeric, nullslast
 
 from sqlalchemy_filter_json.operators import Operator
+from sqlalchemy_filter_json.validators import FilterRequest, Filter
 
 
-def filter_apply(query, entity, obj: dict = None):
+def filter_apply(query, entity, obj: FilterRequest = None):
     """
     Example object
 
@@ -14,13 +15,13 @@ def filter_apply(query, entity, obj: dict = None):
                 "json_field": "demographics",
                 "node": "age",
                 "operator": ">=",
-                "values": 20,
+                "value": 20,
             },
             {
                  "json_field": "demographics",
                  "node": "first_name",
                  "operator": "like",
-                 "values": "%Test%",
+                 "value": "%Test%",
             }
         ],
         "sort": [...]
@@ -32,31 +33,31 @@ def filter_apply(query, entity, obj: dict = None):
             {
                 "json_field": "demographics",
                 "node": "nested",
-                "values": {
+                "value": {
                     "json_field": "demographics",
                     "node": "field1",
                     "operator": ">=",
-                    "values": 20
-                },
+                    "value": 20
+                }
             }
         ],
         "sort": [...]
     }
     """
-    if "filter" not in obj:
-        raise Exception("No 'filter' key found")
+    for f_obj in obj.filter:
+        # Hold the root node
+        root_node = f_obj.node
 
-    for f_obj in obj["filter"]:
-        root_node = f_obj["node"]
-        jsonb_field = f_obj["json_field"]
-        jsonb_node = f_obj["node"]
-        values = f_obj["values"]
+        jsonb_field = f_obj.json_field
+        jsonb_node = f_obj.node
+        values = f_obj.value
 
         if type(values) is dict:
-            new_values = values
-            new_values["node"] = root_node + '.' + new_values["node"]
-            new_values = {"filter": [new_values]}
-            query = filter_apply(query, entity, new_values)
+            # Cast nested object to `Filter` class
+            new_values = Filter(values)
+            new_values.node = root_node + '.' + new_values.node
+            query_obj = {"filter": [new_values]}
+            query = filter_apply(query, entity, FilterRequest(query_obj))
             continue
 
         # Get model field
@@ -72,11 +73,7 @@ def filter_apply(query, entity, obj: dict = None):
         stmt = cast_jsonb_statement(stmt, f_obj)
 
         # Apply operator
-        if "operator" in f_obj:
-            operator = Operator(f_obj["operator"])
-        else:
-            operator = Operator()
-        stmt = operator.execute(left=stmt, right=values)
+        stmt = f_obj.operator.execute(left=stmt, right=values)
 
         # Add filter to query object
         query = query.filter(stmt)
@@ -146,8 +143,8 @@ def sort_apply(query, entity, obj: dict = None):
         return query
 
 
-def cast_jsonb_statement(statement, obj: dict = None):
-    values = obj["values"]
+def cast_jsonb_statement(statement, obj: Filter = None):
+    values = obj.value
 
     # TODO
     # if plain field (check with validator), 'return statement'
@@ -164,7 +161,7 @@ def cast_jsonb_statement(statement, obj: dict = None):
         else:
             return statement
     elif value_type is str:
-        if obj["valueType"] and obj["valueType"] == "jsonb":
+        if obj.valueType and obj.valueType == "jsonb":
             return statement
         else:
             statement = statement.astext

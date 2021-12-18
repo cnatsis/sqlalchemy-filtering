@@ -14,13 +14,13 @@ def filter_apply(query, entity, obj: dict = None):
                 "json_field": "demographics",
                 "node": "age",
                 "operator": ">=",
-                "values": 20,
+                "value": 20,
             },
             {
                  "json_field": "demographics",
                  "node": "first_name",
                  "operator": "like",
-                 "values": "%Test%",
+                 "value": "%Test%",
             }
         ],
         "sort": [...]
@@ -32,11 +32,11 @@ def filter_apply(query, entity, obj: dict = None):
             {
                 "json_field": "demographics",
                 "node": "nested",
-                "values": {
+                "value": {
                     "json_field": "demographics",
                     "node": "field1",
                     "operator": ">=",
-                    "values": 20
+                    "value": 20
                 },
             }
         ],
@@ -50,7 +50,7 @@ def filter_apply(query, entity, obj: dict = None):
         root_node = f_obj["node"]
         jsonb_field = f_obj["json_field"]
         jsonb_node = f_obj["node"]
-        values = f_obj["values"]
+        values = f_obj["value"]
 
         if type(values) is dict:
             new_values = values
@@ -147,7 +147,7 @@ def sort_apply(query, entity, obj: dict = None):
 
 
 def cast_jsonb_statement(statement, obj: dict = None):
-    values = obj["values"]
+    values = obj["value"]
 
     # TODO
     # if plain field (check with validator), 'return statement'

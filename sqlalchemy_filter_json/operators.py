@@ -35,6 +35,8 @@ class Operator:
 
         '@>': lambda left, right: left.op('@>')(right),  # 'contains' equivalent
         '<@': lambda left, right: left.op('<@')(right),
+        '@?': lambda left, right: left.op('@?')(right),
+        '@@': lambda left, right: left.op('@@')(right),
         'contains': lambda left, right: left.contains(right),
         'any': lambda left, right: left.any(right),
 
