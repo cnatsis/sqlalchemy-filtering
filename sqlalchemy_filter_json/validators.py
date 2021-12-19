@@ -7,7 +7,6 @@ from sqlalchemy_filter_json.operators import Operator
 
 def _construct_field(obj, field):
     return obj[field] if field in obj else None
-    # return getattr(obj, field) if hasattr(obj, field) else None
 
 
 def __cast_value_field(obj, field):
@@ -76,7 +75,10 @@ class Sort(object):
         self.json_field: str = str(_construct_field(obj, 'json_field'))
         self.node: str = str(_construct_field(obj, 'node'))
         self.direction: SortDirection = SortDirection(obj['direction'].upper())
-        self.nullsLast: bool = bool(_construct_field(obj, 'nullsLast'))
+        if 'nullLast' in obj:
+            self.nullsLast: bool = bool(_construct_field(obj, 'nullsLast'))
+        else:
+            self.nullsLast: bool = False
 
 
 class SortDirection(enum.Enum):
