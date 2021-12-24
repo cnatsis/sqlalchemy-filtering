@@ -33,15 +33,17 @@ class Operator:
         'in': lambda left, right: left.in_(right),
         'not_in': lambda left, right: left.not_in(right),
 
-        '@>': lambda left, right: left.op('@>')(right),  # 'contains' equivalent
-        '<@': lambda left, right: left.op('<@')(right),
-        '@?': lambda left, right: left.op('@?')(right),
-        '@@': lambda left, right: left.op('@@')(right),
         'contains': lambda left, right: left.contains(right),
         'any': lambda left, right: left.any(right),
 
         'match': lambda left, right: left.match(right),
         'starts_with': lambda left, right: left.startswith(right),
+
+        # PostgreSQL operators
+        '@>': lambda left, right: left.op('@>')(right),  # 'contains' equivalent
+        '<@': lambda left, right: left.op('<@')(right),
+        '@?': lambda left, right: left.op('@?')(right),
+        '@@': lambda left, right: left.op('@@')(right)
     }
 
     def __init__(self, operator=None):

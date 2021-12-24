@@ -6,7 +6,7 @@ from sqlalchemy_filter_json.operators import Operator
 
 
 def _construct_field(obj, field):
-    return obj[field] if field in obj else None
+    return str(obj[field]) if field in obj else None
 
 
 def __cast_value_field(obj, field):
@@ -58,10 +58,10 @@ class Filter(object):
 
     def __init__(self, obj) -> None:
         super().__init__()
-        self.json_field: str = str(_construct_field(obj, 'json_field'))
-        self.node: str = str(_construct_field(obj, 'node'))
+        self.json_field: str = _construct_field(obj, 'json_field')
+        self.node: str = _construct_field(obj, 'node')
         self.operator: Operator = Operator(_construct_field(obj, 'operator'))
-        self.valueType: str = str(_construct_field(obj, 'valueType'))
+        self.valueType: str = _construct_field(obj, 'valueType')
         self.value = _construct_value_field(obj, 'value', Filter.__name__)
 
     def _get_values_class(self):
@@ -72,8 +72,8 @@ class Sort(object):
 
     def __init__(self, obj) -> None:
         super().__init__()
-        self.json_field: str = str(_construct_field(obj, 'json_field'))
-        self.node: str = str(_construct_field(obj, 'node'))
+        self.json_field: str = _construct_field(obj, 'json_field')
+        self.node: str = _construct_field(obj, 'node')
         self.direction: SortDirection = SortDirection(obj['direction'].upper())
         if 'nullLast' in obj:
             self.nullsLast: bool = bool(_construct_field(obj, 'nullsLast'))

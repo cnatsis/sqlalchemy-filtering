@@ -1,4 +1,5 @@
 from sqlalchemy import Numeric
+from sqlalchemy.sql.elements import BinaryExpression
 
 from sqlalchemy_filter_json.validators import FilterRequest, Filter
 
@@ -47,11 +48,13 @@ def filter_apply(query, entity, obj: FilterRequest = None):
         return query
 
     for f_obj in obj.filter:
-        # Hold the root node
         root_node = f_obj.node
 
         jsonb_field = f_obj.json_field
-        jsonb_node = f_obj.node
+        if f_obj.node is None:
+            jsonb_node = f_obj.json_field
+        else:
+            jsonb_node = f_obj.node
         values = f_obj.value
 
         if type(values) is dict:
@@ -65,14 +68,17 @@ def filter_apply(query, entity, obj: FilterRequest = None):
         # Get model field
         node_split = jsonb_node.split('.')
         if len(node_split) == 1 and type(values) is not dict:
-            stmt = getattr(entity, jsonb_field)[jsonb_node]
+            if jsonb_field == jsonb_node:
+                stmt = getattr(entity, jsonb_field)
+            else:
+                stmt = getattr(entity, jsonb_field)[jsonb_node]
         else:
             stmt = getattr(entity, jsonb_field)
             for n in jsonb_node.split('.'):
                 stmt = stmt[n]
 
         # Cast fields
-        stmt = cast_jsonb_statement(stmt, f_obj)
+        stmt = _cast_statement(stmt, f_obj)
 
         # Apply operator
         stmt = f_obj.operator.execute(left=stmt, right=values)
@@ -82,28 +88,29 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     return query
 
 
-def cast_jsonb_statement(statement, obj: Filter = None):
+def _cast_statement(statement, obj: Filter = None):
     values = obj.value
 
     # TODO
     # if plain field (check with validator), 'return statement'
     # jsonb_field = obj["json_field"]
 
-    value_type = type(values)
-    if value_type is list:
-        if len(values) != 0:
-            element = type(values[0])
-            if element in (float, int, complex):
-                statement = statement.cast(Numeric)
+    if type(statement) == BinaryExpression.__name__:
+        value_type = type(values)
+        if value_type is list:
+            if len(values) != 0:
+                element = type(values[0])
+                if element in (float, int, complex):
+                    statement = statement.cast(Numeric)
+                else:
+                    statement = statement.astext
+            else:
+                return statement
+        elif value_type is str:
+            if obj.valueType and obj.valueType == "jsonb":
+                return statement
             else:
                 statement = statement.astext
-        else:
-            return statement
-    elif value_type is str:
-        if obj.valueType and obj.valueType == "jsonb":
-            return statement
-        else:
-            statement = statement.astext
-    elif value_type in (float, int, complex):
-        statement = statement.cast(Numeric)
+        elif value_type in (float, int, complex):
+            statement = statement.cast(Numeric)
     return statement
