@@ -12,7 +12,7 @@ def sort_apply(query, entity, obj: SortRequest = None):
         "filter": [...],
         "sort": [
             {
-                "json_field": "demographics",
+                "field": "demographics",
                 "node": "age",
                 "direction": "asc",
                 "nullsLast": True,
@@ -25,7 +25,7 @@ def sort_apply(query, entity, obj: SortRequest = None):
         "filter": [...],
         "sort": [
             {
-                "json_field": "demographics",
+                "field": "demographics",
                 "node": "nested.field1",
                 "direction": "asc",
                 "nullsLast": True,
@@ -42,15 +42,15 @@ def sort_apply(query, entity, obj: SortRequest = None):
     if len(sort_obj) != 0:
         for sort_request in sort_obj:
             if sort_request.node is None:
-                node_sort = sort_request.json_field
+                node_sort = sort_request.field
             else:
                 node_sort = sort_request.node
 
             sort_split = node_sort.split('.')
             if len(sort_split) == 0:
-                sort_stmt = getattr(entity, sort_request.json_field)[sort_request.node]
+                sort_stmt = getattr(entity, sort_request.field)[sort_request.node]
             else:
-                sort_stmt = getattr(entity, sort_request.json_field)
+                sort_stmt = getattr(entity, sort_request.field)
                 for s in sort_split:
                     if s is not node_sort:
                         sort_stmt = sort_stmt[s]

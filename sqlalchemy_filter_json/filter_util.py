@@ -12,13 +12,13 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     obj = {
         "filter": [
             {
-                "json_field": "demographics",
+                "field": "demographics",
                 "node": "age",
                 "operator": ">=",
                 "value": 20,
             },
             {
-                 "json_field": "demographics",
+                 "field": "demographics",
                  "node": "first_name",
                  "operator": "like",
                  "value": "%Test%",
@@ -31,10 +31,10 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     obj = {
         "filter": [
             {
-                "json_field": "demographics",
+                "field": "demographics",
                 "node": "nested",
                 "value": {
-                    "json_field": "demographics",
+                    "field": "demographics",
                     "node": "field1",
                     "operator": ">=",
                     "value": 20
@@ -50,11 +50,11 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     for f_obj in obj.filter:
         root_node = f_obj.node
 
-        jsonb_field = f_obj.json_field
+        field = f_obj.field
         if f_obj.node is None:
-            jsonb_node = f_obj.json_field
+            field_node = f_obj.field
         else:
-            jsonb_node = f_obj.node
+            field_node = f_obj.node
         values = f_obj.value
 
         if type(values) is dict:
@@ -66,15 +66,15 @@ def filter_apply(query, entity, obj: FilterRequest = None):
             continue
 
         # Get model field
-        node_split = jsonb_node.split('.')
+        node_split = field_node.split('.')
         if len(node_split) == 1 and type(values) is not dict:
-            if jsonb_field == jsonb_node:
-                stmt = getattr(entity, jsonb_field)
+            if field == field_node:
+                stmt = getattr(entity, field)
             else:
-                stmt = getattr(entity, jsonb_field)[jsonb_node]
+                stmt = getattr(entity, field)[field_node]
         else:
-            stmt = getattr(entity, jsonb_field)
-            for n in jsonb_node.split('.'):
+            stmt = getattr(entity, field)
+            for n in field_node.split('.'):
                 stmt = stmt[n]
 
         # Cast fields

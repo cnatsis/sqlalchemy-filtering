@@ -58,7 +58,7 @@ class Filter(object):
 
     def __init__(self, obj) -> None:
         super().__init__()
-        self.json_field: str = _construct_field(obj, 'json_field')
+        self.field: str = _construct_field(obj, 'field')
         self.node: str = _construct_field(obj, 'node')
         self.operator: Operator = Operator(_construct_field(obj, 'operator'))
         self.valueType: str = _construct_field(obj, 'valueType')
@@ -72,7 +72,7 @@ class Sort(object):
 
     def __init__(self, obj) -> None:
         super().__init__()
-        self.json_field: str = _construct_field(obj, 'json_field')
+        self.field: str = _construct_field(obj, 'field')
         self.node: str = _construct_field(obj, 'node')
         self.direction: SortDirection = SortDirection(obj['direction'].upper())
         if 'nullLast' in obj:
