@@ -41,17 +41,31 @@ def _construct_value_field(obj, field, class_type):
         return None
 
 
+def _construct_filter_object(obj):
+    expressions = []
+
+    if obj and obj['filter']:
+        # If no operator exists, add the 'and' operator.
+        # if not any(filter_operator in obj['filter'].keys() for filter_operator in FilterOperator.OPERATORS.keys()):
+        if type(obj['filter']) == list:
+            for expression in obj['filter']:
+                expressions.append(Filter(expression))
+            return {
+                "and": expressions
+            }
+    # Create Filter object
+    for key in obj['filter'].keys():
+        for expression in obj['filter'][key]:
+            expressions.append(Filter(expression))
+        obj['filter'][key] = expressions
+    return obj['filter']
+
+
 class FilterRequest(object):
 
     def __init__(self, request) -> None:
         super().__init__()
-        self.filter: [Filter] = _construct_value_field(request, 'filter', Filter.__name__)
-
-
-class SortRequest(object):
-    def __init__(self, request) -> None:
-        super().__init__()
-        self.sort: [Sort] = _construct_value_field(request, 'sort', Sort.__name__)
+        self.filter: dict = _construct_filter_object(request)
 
 
 class Filter(object):
@@ -66,6 +80,12 @@ class Filter(object):
 
     def _get_values_class(self):
         return type(self.value).__name__
+
+
+class SortRequest(object):
+    def __init__(self, request) -> None:
+        super().__init__()
+        self.sort: [Sort] = _construct_value_field(request, 'sort', Sort.__name__)
 
 
 class Sort(object):

@@ -1,4 +1,5 @@
 from sqlalchemy.sql.operators import op
+from sqlalchemy import or_, and_, not_
 
 
 class Operator:
@@ -57,3 +58,34 @@ class Operator:
 
     def execute(self, **kwargs):
         return self.OPERATORS.get(self.operator)(**kwargs)
+
+
+class FilterOperator:
+    OPERATORS = {
+        # 1. SQLAlchemy function
+        # 2. Positional argument produce an "empty" or dynamically generated filter
+        # not_ operator takes only one argument as input
+        'and': (and_, True),
+        'or': (or_, False),
+        'not': (not_, None),
+    }
+
+    def __init__(self, operator=None):
+        if not operator:
+            operator = 'and'
+        if operator not in self.OPERATORS:
+            raise Exception('Operator `{}` is not valid.'.format(operator))
+
+        self.operator = operator
+        self.function = self.OPERATORS[operator]
+
+    def execute(self, *args):
+        func, argument = self.OPERATORS.get(self.operator)
+        if argument is None:
+            # Execute multiple not_ operators with AND clause
+            funcs = []
+            for arg in args:
+                funcs.append(func(arg))
+            return and_(True, *funcs)
+        else:
+            return func(argument, *args)
