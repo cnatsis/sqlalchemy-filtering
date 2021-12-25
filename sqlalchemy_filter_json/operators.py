@@ -2,7 +2,7 @@ from sqlalchemy.sql.operators import op
 from sqlalchemy import or_, and_, not_
 
 
-class Operator:
+class ComparisonOperator:
     OPERATORS = {
         'is': lambda left, right: left.is_(right),
         '==': lambda left, right: left == right,

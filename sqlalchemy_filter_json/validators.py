@@ -2,7 +2,7 @@ import enum
 
 from sqlalchemy import inspect
 
-from sqlalchemy_filter_json.operators import Operator
+from sqlalchemy_filter_json.operators import ComparisonOperator
 
 
 def _construct_field(obj, field):
@@ -74,7 +74,7 @@ class Filter(object):
         super().__init__()
         self.field: str = _construct_field(obj, 'field')
         self.node: str = _construct_field(obj, 'node')
-        self.operator: Operator = Operator(_construct_field(obj, 'operator'))
+        self.operator: ComparisonOperator = ComparisonOperator(_construct_field(obj, 'operator'))
         self.valueType: str = _construct_field(obj, 'valueType')
         self.value = _construct_value_field(obj, 'value', Filter.__name__)
 
