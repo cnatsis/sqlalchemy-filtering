@@ -1,0 +1,31 @@
+{
+  "patient_details1": "test",
+  "patient_details2": "2021-10-11",
+  "patient_details3": "Male",
+  "patient_details4": 180,
+  "patient_details5": 80,
+  "patient_details6": 80,
+  "patient_details7": "White",
+  "patient_details8": "Single (never married)",
+  "patient_details9": "Dev",
+  "patient_details10": [
+    {
+      "Column 1": "Test"
+    }
+  ],
+  "patient_details11": [
+    {
+      "Column 1": "Test1"
+    }
+  ],
+  "patient_details12": [
+    {
+      "Column 1": "Test3"
+    }
+  ],
+  "patient_details13": [
+    {
+      "Column 1": "Test2"
+    }
+  ]
+}
