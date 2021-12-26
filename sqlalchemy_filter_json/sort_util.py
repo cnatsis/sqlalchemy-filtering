@@ -5,33 +5,40 @@ from sqlalchemy_filter_json.validators import SortRequest, SortDirection
 
 def sort_apply(query, entity, obj: SortRequest = None):
     """
-    Example object
+    Construct sorting statements on SQLAlchemy query
+    :param query: Query object of type :class:`sqlalchemy.orm.Query`.
+    :param entity: SQLAlchemy model class.
+    :param obj: :class:`SortRequest` object.
 
-    -- Simple request
-    obj = {
-        "filter": [...],
-        "sort": [
-            {
-                "field": "demographics",
-                "node": "age",
-                "direction": "asc",
-                "nullsLast": True
-            }
-        ]
-    }
+        Example object
 
-    -- Nested request
-    obj = {
-        "filter": [...],
-        "sort": [
-            {
-                "field": "demographics",
-                "node": "nested.field1",
-                "direction": "asc",
-                "nullsLast": True
-            }
-        ]
-    }
+        -- Simple request
+        obj = {
+            "filter": [...],
+            "sort": [
+                {
+                    "field": "demographics",
+                    "node": "age",
+                    "direction": "asc",
+                    "nullsLast": True
+                }
+            ]
+        }
+
+        -- Nested request
+        obj = {
+            "filter": [...],
+            "sort": [
+                {
+                    "field": "demographics",
+                    "node": "nested.field1",
+                    "direction": "asc",
+                    "nullsLast": True
+                }
+            ]
+        }
+
+    :return: Query object of type :class:`sqlalchemy.orm.Query` with applied sorting statements.
     """
     if obj.sort is None:
         return query

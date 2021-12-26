@@ -12,7 +12,7 @@ def filter_apply(query, entity, obj: FilterRequest = None):
 
     :param query: Query object of type :class:`sqlalchemy.orm.Query`.
     :param entity: SQLAlchemy model class.
-    :param obj: :class:`FilterRequest` object. `sort` definition is optional.
+    :param obj: :class:`FilterRequest` object.
 
         Example object
 
