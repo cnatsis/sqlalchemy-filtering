@@ -15,7 +15,7 @@ def sort_apply(query, entity, obj: SortRequest = None):
                 "field": "demographics",
                 "node": "age",
                 "direction": "asc",
-                "nullsLast": True,
+                "nullsLast": True
             }
         ]
     }
@@ -28,23 +28,18 @@ def sort_apply(query, entity, obj: SortRequest = None):
                 "field": "demographics",
                 "node": "nested.field1",
                 "direction": "asc",
-                "nullsLast": True,
+                "nullsLast": True
             }
         ]
     }
     """
-    # if "sort" not in obj.keys():
-    #     return query
     if obj.sort is None:
         return query
 
     sort_obj = obj.sort
     if len(sort_obj) != 0:
         for sort_request in sort_obj:
-            if sort_request.node is None:
-                node_sort = sort_request.field
-            else:
-                node_sort = sort_request.node
+            node_sort = sort_request.field if sort_request.node is None else sort_request.node
 
             sort_split = node_sort.split('.')
             if len(sort_split) == 0:

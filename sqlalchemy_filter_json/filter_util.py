@@ -166,13 +166,9 @@ def _cast_statement(statement, obj: Filter = None):
             try:
                 json.loads(values)
                 return statement
-            except:
+            except ValueError:
                 statement = statement.astext
 
-            # if obj.valueType and obj.valueType == "jsonb":
-            #     return statement
-            # else:
-            #     statement = statement.astext
         elif value_type in _get_numeric_types():
             statement = statement.cast(Numeric)
     return statement
