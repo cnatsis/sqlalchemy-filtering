@@ -7,64 +7,86 @@ from sqlalchemy_filter_json.validators import FilterRequest, Filter
 
 def filter_apply(query, entity, obj: FilterRequest = None):
     """
-    Example object
+    Construct filters on SQLAlchemy query
 
-    -- Simple request
-    obj = {
-        "filter": [
-            {
-                "field": "demographics",
-                "node": "age",
-                "operator": ">=",
-                "value": 20,
-            },
-            {
-                 "field": "demographics",
-                 "node": "first_name",
-                 "operator": "like",
-                 "value": "%Test%",
-            }
-        ],
-        "sort": [...]
-    }
+    :param query: Query object of type :class:`sqlalchemy.orm.Query`.
+    :param entity: SQLAlchemy model class.
+    :param obj: :class:`FilterRequest` object. `sort` definition is optional.
 
-    --- Simple request with operators
-    obj = {
-        "filter": [
-            "and": [
+        Example object
+
+        -- Simple request
+        obj = {
+            "filter": [
                 {
                     "field": "demographics",
                     "node": "age",
                     "operator": ">=",
-                    "value": 20,
+                    "value": 20
                 },
                 {
                      "field": "demographics",
                      "node": "first_name",
                      "operator": "like",
-                     "value": "%Test%",
+                     "value": "%Test%"
                 }
-            ]
-        ],
-        "sort": [...]
-    }
+            ],
+            "sort": [...]
+        }
 
-    -- Nested request
-    obj = {
-        "filter": [
-            {
-                "field": "demographics",
-                "node": "nested",
-                "value": {
+        --- Simple request with operators
+        obj = {
+            "filter": [
+                "and": [
+                    {
+                        "field": "demographics",
+                        "node": "age",
+                        "operator": ">=",
+                        "value": 20
+                    },
+                    {
+                         "field": "demographics",
+                         "node": "first_name",
+                         "operator": "like",
+                         "value": "%Test%"
+                    }
+                ]
+            ],
+            "sort": [...]
+        }
+
+        -- Nested request
+        obj = {
+            "filter": [
+                {
                     "field": "demographics",
-                    "node": "field1",
-                    "operator": ">=",
-                    "value": 20
+                    "node": "nested",
+                    "value": {
+                        "field": "demographics",
+                        "node": "field1",
+                        "operator": ">=",
+                        "value": 20
+                    }
                 }
-            }
-        ],
-        "sort": [...]
-    }
+            ],
+            "sort": [...]
+        }
+
+        -- JSON request
+        obj =
+            "filter": [
+                {
+                    "field": "details",
+                    "node": "user_details",
+                    "operator": "@>",
+                    "valueType": "jsonb",
+                    "value": "[{\"skill\":\"Fighting\",\"rating\":10}]"
+                }
+            ],
+            "sort": [...]
+        }
+
+    :returns: Query object of type :class:`sqlalchemy.orm.Query` with applied filters.
     """
     exps = []
     if obj.filter is None:
