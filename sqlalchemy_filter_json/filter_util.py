@@ -1,3 +1,4 @@
+import json
 from sqlalchemy import Numeric
 from sqlalchemy.sql.elements import BinaryExpression
 
@@ -96,22 +97,22 @@ def filter_apply(query, entity, obj: FilterRequest = None):
         for f_obj in obj.filter[key_operator]:
             node = f_obj.node
             root_node = node
-            # root_node = f_obj.node
 
             field = f_obj.field
-            if node is None:
-                field_node = f_obj.field
-            else:
-                field_node = node
+            field_node = f_obj.field if node is None else node
             values = f_obj.value
 
             if type(values) is dict:
                 # Cast nested object to `Filter` class
-                new_values = Filter(values)
+                # new_values = Filter(values)
+                new_values: Filter = values
                 new_values.node = root_node + '.' + new_values.node
-                query_obj = {"filter": [new_values]}
+                new_values.operator = new_values.operator.operator
+                query_obj = {"filter": [new_values.__dict__]}
                 query = filter_apply(query, entity, FilterRequest(query_obj))
                 continue
+            # except Exception:
+            #     print('exception')
 
             # Get model field
             node_split = field_node.split('.')
@@ -138,13 +139,19 @@ def filter_apply(query, entity, obj: FilterRequest = None):
 
 
 def _cast_statement(statement, obj: Filter = None):
+    """
+    Cast statements to match database field types.
+
+    :param statement:
+        SQLAlchemy expression of types
+        `sqlalchemy.sql.elements.BinaryExpression` (used on simple queries)
+        or `sqlalchemy.orm.attributes.InstrumentedAttribute` (used on advanced JSON queries).
+    :param obj: :class:`Filter` object.
+    :return: :class:`sqlalchemy.sql.elements.BinaryExpression` or `sqlalchemy.orm.attributes.InstrumentedAttribute`.
+    """
     values = obj.value
 
-    # TODO
-    # if plain field (check with validator), 'return statement'
-    # jsonb_field = obj["json_field"]
-
-    if type(statement) == BinaryExpression.__name__:
+    if isinstance(statement, BinaryExpression):
         value_type = type(values)
         if value_type is list:
             if len(values) != 0:
@@ -156,10 +163,16 @@ def _cast_statement(statement, obj: Filter = None):
             else:
                 return statement
         elif value_type is str:
-            if obj.valueType and obj.valueType == "jsonb":
+            try:
+                json.loads(values)
                 return statement
-            else:
+            except:
                 statement = statement.astext
+
+            # if obj.valueType and obj.valueType == "jsonb":
+            #     return statement
+            # else:
+            #     statement = statement.astext
         elif value_type in _get_numeric_types():
             statement = statement.cast(Numeric)
     return statement

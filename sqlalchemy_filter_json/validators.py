@@ -25,9 +25,9 @@ def _construct_value_field(obj, field, class_type):
             values = []
             for o in obj[field]:
                 if type(o) is dict:
-                    if class_type is Filter.__name__:
+                    if class_type is Filter:
                         values.append(Filter(o))
-                    elif class_type is Sort.__name__:
+                    elif class_type is Sort:
                         values.append(Sort(o))
                     else:
                         values.append(o)
@@ -36,7 +36,15 @@ def _construct_value_field(obj, field, class_type):
             return values
         else:
             # dict or str cases
-            return _construct_field(obj, field)
+            if isinstance(obj[field], dict):
+                if class_type is Filter:
+                    return Filter(obj[field])
+                elif class_type is Sort:
+                    return Sort(obj[field])
+                else:
+                    return _construct_field(obj, field)
+            else:
+                return _construct_field(obj, field)
     else:
         return None
 
@@ -44,9 +52,8 @@ def _construct_value_field(obj, field, class_type):
 def _construct_filter_object(obj):
     expressions = []
 
-    if obj and obj['filter']:
+    if obj:
         # If no operator exists, add the 'and' operator.
-        # if not any(filter_operator in obj['filter'].keys() for filter_operator in FilterOperator.OPERATORS.keys()):
         if type(obj['filter']) == list:
             for expression in obj['filter']:
                 expressions.append(Filter(expression))
@@ -75,8 +82,7 @@ class Filter(object):
         self.field: str = _construct_field(obj, 'field')
         self.node: str = _construct_field(obj, 'node')
         self.operator: ComparisonOperator = ComparisonOperator(_construct_field(obj, 'operator'))
-        self.valueType: str = _construct_field(obj, 'valueType')
-        self.value = _construct_value_field(obj, 'value', Filter.__name__)
+        self.value = _construct_value_field(obj, 'value', Filter)
 
     def _get_values_class(self):
         return type(self.value).__name__
@@ -85,7 +91,7 @@ class Filter(object):
 class SortRequest(object):
     def __init__(self, request) -> None:
         super().__init__()
-        self.sort: [Sort] = _construct_value_field(request, 'sort', Sort.__name__)
+        self.sort: [Sort] = _construct_value_field(request, 'sort', Sort)
 
 
 class Sort(object):
