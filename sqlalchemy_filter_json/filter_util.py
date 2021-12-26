@@ -56,23 +56,6 @@ def filter_apply(query, entity, obj: FilterRequest = None):
             "sort": [...]
         }
 
-        -- Nested request
-        obj = {
-            "filter": [
-                {
-                    "field": "demographics",
-                    "node": "nested",
-                    "value": {
-                        "field": "demographics",
-                        "node": "field1",
-                        "operator": ">=",
-                        "value": 20
-                    }
-                }
-            ],
-            "sort": [...]
-        }
-
         -- JSON request
         obj =
             "filter": [
@@ -102,17 +85,15 @@ def filter_apply(query, entity, obj: FilterRequest = None):
             field_node = f_obj.field if node is None else node
             values = f_obj.value
 
-            if type(values) is dict:
-                # Cast nested object to `Filter` class
-                # new_values = Filter(values)
-                new_values: Filter = values
-                new_values.node = root_node + '.' + new_values.node
-                new_values.operator = new_values.operator.operator
-                query_obj = {"filter": [new_values.__dict__]}
-                query = filter_apply(query, entity, FilterRequest(query_obj))
-                continue
-            # except Exception:
-            #     print('exception')
+            # if type(values) is dict:
+            #     # Cast nested object to `Filter` class
+            #     # new_values = Filter(values)
+            #     new_values: Filter = values
+            #     new_values.node = root_node + '.' + new_values.node
+            #     new_values.operator = new_values.operator.operator
+            #     query_obj = {"filter": [new_values.__dict__]}
+            #     query = filter_apply(query, entity, FilterRequest(query_obj))
+            #     continue
 
             # Get model field
             node_split = field_node.split('.')
