@@ -60,10 +60,7 @@ def sort_apply(query, entity, obj: SortRequest = None):
             direction = sort_request.direction
             nulls_last = sort_request.nullsLast
 
-            if direction is None or direction == SortDirection.ASC:
-                sort_stmt = sort_stmt.asc()
-            else:
-                sort_stmt = sort_stmt.desc()
+            sort_stmt = sort_stmt.asc() if (direction is None or direction == SortDirection.ASC) else sort_stmt.desc()
 
             if nulls_last is not None and nulls_last:
                 sort_stmt = nullslast(sort_stmt)

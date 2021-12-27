@@ -79,21 +79,10 @@ def filter_apply(query, entity, obj: FilterRequest = None):
     for key_operator in obj.filter.keys():
         for f_obj in obj.filter[key_operator]:
             node = f_obj.node
-            root_node = node
 
             field = f_obj.field
             field_node = f_obj.field if node is None else node
             values = f_obj.value
-
-            # if type(values) is dict:
-            #     # Cast nested object to `Filter` class
-            #     # new_values = Filter(values)
-            #     new_values: Filter = values
-            #     new_values.node = root_node + '.' + new_values.node
-            #     new_values.operator = new_values.operator.operator
-            #     query_obj = {"filter": [new_values.__dict__]}
-            #     query = filter_apply(query, entity, FilterRequest(query_obj))
-            #     continue
 
             # Get model field
             node_split = field_node.split('.')
@@ -137,10 +126,7 @@ def _cast_statement(statement, obj: Filter = None):
         if value_type is list:
             if len(values) != 0:
                 element = type(values[0])
-                if element in _get_numeric_types():
-                    statement = statement.cast(Numeric)
-                else:
-                    statement = statement.astext
+                statement = statement.cast(Numeric) if element in _get_numeric_types() else statement.astext
             else:
                 return statement
         elif value_type is str:
@@ -149,7 +135,6 @@ def _cast_statement(statement, obj: Filter = None):
                 return statement
             except ValueError:
                 statement = statement.astext
-
         elif value_type in _get_numeric_types():
             statement = statement.cast(Numeric)
     return statement

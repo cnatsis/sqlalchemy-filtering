@@ -1,6 +1,8 @@
 from sqlalchemy.sql.operators import op
 from sqlalchemy import or_, and_, not_
 
+from sqlalchemy_filter_json.exceptions import OperatorNotFoundException
+
 
 class ComparisonOperator:
     OPERATORS = {
@@ -51,7 +53,7 @@ class ComparisonOperator:
         if not operator:
             operator = '=='
         if operator not in self.OPERATORS:
-            raise Exception('Operator `{}` is not valid.'.format(operator))
+            raise OperatorNotFoundException('Operator `{}` is not valid.'.format(operator))
 
         self.operator = operator
         self.function = self.OPERATORS[operator]
@@ -74,7 +76,7 @@ class FilterOperator:
         if not operator:
             operator = 'and'
         if operator not in self.OPERATORS:
-            raise Exception('Operator `{}` is not valid.'.format(operator))
+            raise OperatorNotFoundException('Operator `{}` is not valid.'.format(operator))
 
         self.operator = operator
         self.function = self.OPERATORS[operator]

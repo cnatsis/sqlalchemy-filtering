@@ -2,6 +2,7 @@ import enum
 
 from sqlalchemy import inspect
 
+from sqlalchemy_filter_json.exceptions import FieldNotFoundException
 from sqlalchemy_filter_json.operators import ComparisonOperator
 
 
@@ -24,25 +25,15 @@ def _construct_value_field(obj, field, class_type):
             # list of dict objects or simple list
             values = []
             for o in obj[field]:
-                if type(o) is dict:
-                    if class_type is Filter:
-                        values.append(Filter(o))
-                    elif class_type is Sort:
-                        values.append(Sort(o))
-                    else:
-                        values.append(o)
+                if type(o) is dict and class_type in (Filter, Sort):
+                    values.append(class_type(o))
                 else:
                     values.append(o)
             return values
         else:
             # dict or str cases
-            if isinstance(obj[field], dict):
-                if class_type is Filter:
-                    return Filter(obj[field])
-                elif class_type is Sort:
-                    return Sort(obj[field])
-                else:
-                    return _construct_field(obj, field)
+            if isinstance(obj[field], dict) and class_type in (Filter, Sort):
+                return class_type(obj[field])
             else:
                 return _construct_field(obj, field)
     else:
@@ -52,14 +43,13 @@ def _construct_value_field(obj, field, class_type):
 def _construct_filter_object(obj):
     expressions = []
 
-    if obj:
+    if obj and type(obj['filter']) == list:
         # If no operator exists, add the 'and' operator.
-        if type(obj['filter']) == list:
-            for expression in obj['filter']:
-                expressions.append(Filter(expression))
-            return {
-                "and": expressions
-            }
+        for expression in obj['filter']:
+            expressions.append(Filter(expression))
+        return {
+            "and": expressions
+        }
     # Create Filter object
     for key in obj['filter'].keys():
         for expression in obj['filter'][key]:
@@ -121,7 +111,7 @@ class SQLAlchemyField(object):
 
     def get_field(self):
         if self.field not in self.get_model_field_names():
-            raise Exception('Field `{}` not found model `{}`'.format(self.field, self.model))
+            raise FieldNotFoundException('Field `{}` not found model `{}`'.format(self.field, self.model))
         return getattr(self.model, self.field)
 
     def get_model_field_info(self):
