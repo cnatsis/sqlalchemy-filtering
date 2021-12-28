@@ -11,6 +11,11 @@ def compile_query_postgres(query):
     return str(query.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
 
 
+def compile_query_mysql(query):
+    from sqlalchemy.dialects import mysql
+    return str(query.statement.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}))
+
+
 def compile_query_sqlite(query):
     from sqlalchemy.dialects import sqlite
     return str(query.statement.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))

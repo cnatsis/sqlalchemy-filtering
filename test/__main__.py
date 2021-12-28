@@ -1,31 +1,41 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from sqlalchemy_filter_json.filter_util import filter_apply
-from sqlalchemy_filter_json.sort_util import sort_apply
-from sqlalchemy_filter_json.validators import FilterRequest, SortRequest
+from sqlalchemy_filtering.filter_util import filter_apply
+from sqlalchemy_filtering.operators import SQLDialect
+from sqlalchemy_filtering.sort_util import sort_apply
+from sqlalchemy_filtering.validators import FilterRequest, SortRequest
 from test import models2
 from test.session import init_db, destroy_db, get_db
 
 obj = {
     "filter": [
-        {
-            ## (PostgreSQL) It works and returns all users that have skill Fighting with rank 10
-            "field": "details",
-            "node": "user_details",
-            "operator": "@>",
-            "valueType": "jsonb",
-            "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
-        }
-        ,
-        {
-            ## (PostgreSQL) It works and returns all users that have skill Fighting and any rating (in any skill) with rank 10
-            "field": "details",
-            "node": "user_details",
-            "operator": "@>",
-            "valueType": "jsonb",
-            "value": "[{\"skill\":\"Fighting\"},{\"rating\":10}]",
-        }
+        # {
+        #     ## (PostgreSQL) It works and returns all users that have skill Fighting with rank 10
+        #     "field": "details",
+        #     "node": "user_details",
+        #     "operator": "@>",
+        #     # "valueType": "jsonb",
+        #     "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
+        # }
+        # ,
+        # {
+        #     ## (PostgreSQL) It works and returns all users that have skill Fighting with rank 10
+        #     "field": "details",
+        #     "node": "user_details",
+        #     "operator": "==",
+        #     # "valueType": "jsonb",
+        #     "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
+        # }
+        # ,
+        # {
+        #     ## (PostgreSQL) It works and returns all users that have skill Fighting and any rating (in any skill) with rank 10
+        #     "field": "details",
+        #     "node": "user_details",
+        #     "operator": "@>",
+        #     # "valueType": "jsonb",
+        #     "value": "[{\"skill\":\"Fighting\"},{\"rating\":10}]",
+        # }
         # ,
         # {
         #     "field": "details",
@@ -36,6 +46,33 @@ obj = {
         #             "operator": ">",
         #             "value": 7.2
         #         }
+        # },
+        # {
+        #     "field": "details",
+        #     "node": "height",
+        #     "operator": ">",
+        #     "value": 176
+        # }
+        # {
+        #     "field": "details",
+        #     "node": "user_details",
+        #     "value": {
+        #         "field": "extra",
+        #         "node": "test",
+        #         "operator": "==",
+        #         "value": "value"
+        #     }
+        # }
+        # ,
+        # {
+        #     "field": "details",
+        #     "node": "user_details",
+        #     "value": {
+        #         "field": "details",
+        #         "node": "skill",
+        #         "operator": "==",
+        #         "value": "[{\"skill\":\"Fighting\",\"rating\":10}]"
+        #     }
         # }
         # ,
         # {
@@ -51,19 +88,12 @@ obj = {
         #     "valueType": "jsonb",
         #     "value": "[{\"Column 1\":\"Test\"}]",
         # }
-        # ,
-        # {
-        #     "field": "demographics",
-        #     "node": "patient_details5",
-        #     "operator": ">",
-        #     "value": 8,
-        # }
     ]
     ,
     "sort": [
         {
             "field": "details",
-            "node": "user_details",
+            "node": "height",
             "direction": "desc",
             "nullsLast": True
         }
@@ -103,6 +133,7 @@ obj3 = {
                 "value": 7
             }
         ]
+
     },
     "sort": [
         {
@@ -114,8 +145,23 @@ obj3 = {
     ]
 }
 
+obj4 = {
+    "filter": [
+        {
+            "field": "details",
+            "node": "extra",
+            "value": {
+                "field": "test",
+                "operator": "==",
+                "value": "value"
+            }
+        }
+    ]
+}
+
 engine = create_engine(
     'postgresql://postgres:password@localhost:5432/filter',
+    # 'mysql+pymysql://root:@localhost:3306/filter',
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -127,15 +173,15 @@ if __name__ == '__main__':
     db = SessionLocal()
 
     query = db.query(models2.UserInfo)
-    query = filter_apply(query=query, entity=models2.UserInfo, obj=FilterRequest(obj))
-    query = sort_apply(query=query, entity=models2.UserInfo, obj=SortRequest(obj))
+    query = filter_apply(query=query, entity=models2.UserInfo, obj=FilterRequest(obj4), dialect=SQLDialect.POSTGRESQL)
+    query = sort_apply(query=query, entity=models2.UserInfo, obj=SortRequest(obj4))
 
     # query = db.query(models2.Ratings)
     # query = filter_apply(query=query, entity=models2.Ratings, obj=FilterRequest(obj3))
     # query = sort_apply(query=query, entity=models2.Ratings, obj=SortRequest(obj3))
 
     print(models2.compile_query_postgres(query))
-    # print("-------------")
+    print("-------------")
     res = query.all()
     for r in res:
         print(dict(r.__dict__))
