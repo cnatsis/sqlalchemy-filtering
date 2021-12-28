@@ -2,7 +2,7 @@ from enum import Enum
 
 from sqlalchemy import or_, and_, not_
 
-from sqlalchemy_filter_json.exceptions import OperatorNotFoundException
+from sqlalchemy_filtering.exceptions import OperatorNotFoundException
 
 
 class ComparisonOperator:

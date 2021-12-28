@@ -1,6 +1,6 @@
 from sqlalchemy import nullslast
 
-from sqlalchemy_filter_json.validators import SortRequest, SortDirection, SQLAlchemyField
+from sqlalchemy_filtering.validators import SortRequest, SortDirection, SQLAlchemyField
 
 
 def sort_apply(query, entity, obj: SortRequest = None):

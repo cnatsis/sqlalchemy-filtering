@@ -2,8 +2,8 @@ import json
 from sqlalchemy import Numeric
 from sqlalchemy.sql.elements import BinaryExpression
 
-from sqlalchemy_filter_json.operators import FilterOperator, SQLDialect
-from sqlalchemy_filter_json.validators import FilterRequest, Filter, _get_numeric_types, SQLAlchemyField
+from sqlalchemy_filtering.operators import FilterOperator, SQLDialect
+from sqlalchemy_filtering.validators import FilterRequest, Filter, _get_numeric_types, SQLAlchemyField
 
 
 def filter_apply(query, entity, obj: FilterRequest = None, dialect: SQLDialect = None):

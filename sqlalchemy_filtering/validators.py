@@ -2,8 +2,8 @@ import enum
 
 from sqlalchemy import inspect
 
-from sqlalchemy_filter_json.exceptions import FieldNotFoundException
-from sqlalchemy_filter_json.operators import ComparisonOperator
+from sqlalchemy_filtering.exceptions import FieldNotFoundException
+from sqlalchemy_filtering.operators import ComparisonOperator
 
 
 def _construct_field(obj, field):
