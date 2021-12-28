@@ -7,7 +7,10 @@ from sqlalchemy_filter_json.operators import ComparisonOperator
 
 
 def _construct_field(obj, field):
-    return str(obj[field]) if field in obj else None
+    if field in obj:
+        return obj[field] if type(obj[field]) in _get_numeric_types() else str(obj[field])
+    else:
+        return None
 
 
 def __cast_value_field(obj, field):
@@ -19,7 +22,6 @@ def __cast_value_field(obj, field):
 
 
 def _construct_value_field(obj, field, class_type):
-    # if hasattr(obj, field):
     if field in obj:
         if type(obj[field]) is list:
             # list of dict objects or simple list
@@ -56,6 +58,10 @@ def _construct_filter_object(obj):
             expressions.append(Filter(expression))
         obj['filter'][key] = expressions
     return obj['filter']
+
+
+def _get_numeric_types():
+    return float, int, complex
 
 
 class FilterRequest(object):

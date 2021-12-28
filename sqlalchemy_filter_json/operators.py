@@ -1,4 +1,5 @@
-from sqlalchemy.sql.operators import op
+from enum import Enum
+
 from sqlalchemy import or_, and_, not_
 
 from sqlalchemy_filter_json.exceptions import OperatorNotFoundException
@@ -91,3 +92,8 @@ class FilterOperator:
             return and_(True, *funcs)
         else:
             return func(argument, *args)
+
+
+class SQLDialect(Enum):
+    POSTGRESQL = 'postgresql'
+    MYSQL = 'mysql'
