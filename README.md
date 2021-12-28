@@ -103,7 +103,6 @@ obj = {
             "field": "details",
             "node": "user_details",
             "operator": "@>",
-            # "valueType": "jsonb",
             "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
         },
         {
