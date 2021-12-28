@@ -1,6 +1,6 @@
 from sqlalchemy import nullslast
 
-from sqlalchemy_filter_json.validators import SortRequest, SortDirection
+from sqlalchemy_filter_json.validators import SortRequest, SortDirection, SQLAlchemyField
 
 
 def sort_apply(query, entity, obj: SortRequest = None):
@@ -50,9 +50,9 @@ def sort_apply(query, entity, obj: SortRequest = None):
 
             sort_split = node_sort.split('.')
             if len(sort_split) == 0:
-                sort_stmt = getattr(entity, sort_request.field)[sort_request.node]
+                sort_stmt = SQLAlchemyField(entity, sort_request.field).get_field()[sort_request.node]
             else:
-                sort_stmt = getattr(entity, sort_request.field)
+                sort_stmt = SQLAlchemyField(entity, sort_request.field).get_field()
                 for s in sort_split:
                     if s is not node_sort:
                         sort_stmt = sort_stmt[s]
@@ -65,6 +65,6 @@ def sort_apply(query, entity, obj: SortRequest = None):
             if nulls_last is not None and nulls_last:
                 sort_stmt = nullslast(sort_stmt)
 
-            # Apply order by to query
+            # Apply order by clause to query
             query = query.order_by(sort_stmt)
         return query

@@ -117,19 +117,19 @@ class SQLAlchemyField(object):
 
     def get_field(self):
         if self.field not in self.get_model_field_names():
-            raise FieldNotFoundException('Field `{}` not found model `{}`'.format(self.field, self.model))
+            raise FieldNotFoundException('Field `{}` not found in model `{}`.'.format(self.field, self.model))
         return getattr(self.model, self.field)
 
     def get_model_field_info(self):
         inspect_mapper = inspect(self.model)
         columns = inspect_mapper.columns
-        details = []
-        for c in columns._all_columns:
-            elem = {
+        details = [
+            {
                 "name": c.key,
                 "type": c.type.python_type
             }
-            details.append(elem)
+            for c in columns._all_columns
+        ]
         return details
 
     def get_model_field_names(self):

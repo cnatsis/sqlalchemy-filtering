@@ -3,7 +3,7 @@ from sqlalchemy import Numeric
 from sqlalchemy.sql.elements import BinaryExpression
 
 from sqlalchemy_filter_json.operators import FilterOperator, SQLDialect
-from sqlalchemy_filter_json.validators import FilterRequest, Filter, _get_numeric_types
+from sqlalchemy_filter_json.validators import FilterRequest, Filter, _get_numeric_types, SQLAlchemyField
 
 
 def filter_apply(query, entity, obj: FilterRequest = None, dialect: SQLDialect = None):
@@ -102,11 +102,11 @@ def filter_apply(query, entity, obj: FilterRequest = None, dialect: SQLDialect =
             node_split = field_node.split('.')
             if len(node_split) == 1 and type(values) is not dict:
                 if field == field_node:
-                    stmt = getattr(entity, field)
+                    stmt = SQLAlchemyField(entity, field).get_field()
                 else:
-                    stmt = getattr(entity, field)[field_node]
+                    stmt = SQLAlchemyField(entity, field).get_field()[field_node]
             else:
-                stmt = getattr(entity, field)
+                stmt = SQLAlchemyField(entity, field).get_field()
                 for n in field_node.split('.'):
                     stmt = stmt[n]
 
@@ -117,7 +117,7 @@ def filter_apply(query, entity, obj: FilterRequest = None, dialect: SQLDialect =
             stmt = f_obj.operator.execute(left=stmt, right=values)
             exps.append(stmt)
 
-            # Add filter to query object
+        # Add filter to query object
         query = query.filter(FilterOperator(key_operator).execute(*exps))
     return query
 
@@ -153,5 +153,3 @@ def _cast_statement(statement, obj: Filter = None, dialect: SQLDialect = None):
         elif value_type in _get_numeric_types():
             statement = statement.cast(Numeric)
     return statement
-
-
