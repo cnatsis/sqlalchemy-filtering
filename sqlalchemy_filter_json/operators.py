@@ -26,11 +26,13 @@ class ComparisonOperator:
 
         '>=': lambda left, right: left >= right,
         'ge': lambda left, right: left >= right,
+
         '<=': lambda left, right: left <= right,
         'le': lambda left, right: left <= right,
 
         'like': lambda left, right: left.like(right),
         'not_like': lambda left, right: left.not_like(right),
+
         'ilike': lambda left, right: left.ilike(right),
         'not_ilike': lambda left, right: left.notilike(right),
 
@@ -43,7 +45,7 @@ class ComparisonOperator:
         'match': lambda left, right: left.match(right),
         'starts_with': lambda left, right: left.startswith(right),
 
-        # PostgreSQL operators
+        # PostgreSQL specific operators
         '@>': lambda left, right: left.op('@>')(right),  # 'contains' equivalent
         '<@': lambda left, right: left.op('<@')(right),
         '@?': lambda left, right: left.op('@?')(right),
@@ -54,7 +56,7 @@ class ComparisonOperator:
         if not operator:
             operator = '=='
         if operator not in self.OPERATORS:
-            raise OperatorNotFoundException('Operator `{}` is not valid.'.format(operator))
+            raise OperatorNotFoundException('ComparisonOperator `{}` is not valid.'.format(operator))
 
         self.operator = operator
         self.function = self.OPERATORS[operator]
@@ -77,7 +79,7 @@ class FilterOperator:
         if not operator:
             operator = 'and'
         if operator not in self.OPERATORS:
-            raise OperatorNotFoundException('Operator `{}` is not valid.'.format(operator))
+            raise OperatorNotFoundException('FilterOperator `{}` is not valid.'.format(operator))
 
         self.operator = operator
         self.function = self.OPERATORS[operator]
