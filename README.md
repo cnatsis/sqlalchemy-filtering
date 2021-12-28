@@ -1,5 +1,18 @@
 # SQLAlchemy filtering & sorting utility
 
+# Table of contents
+
+- [SQLAlchemy filtering & sorting utility](#sqlalchemy-filtering--sorting-utility)
+  - [Purpose](#purpose)
+  - [Features](#features)
+  - [Usage](#usage)
+    - [Filtering](#filtering)
+      - [Filtering operators](#filtering-operators)
+    - [Sorting](#sorting)
+    - [Comparison operators](#comparison-operators)
+      - [PostgreSQL specific JSON operators](#postgresql-specific-json-operators)
+  - [Versions tested](#versions-tested)
+
 ## Purpose
 
 This repository was developed to provide a simple JSON format interface to the [SQLAlchemy](https://github.com/sqlalchemy/sqlalchemy)
@@ -218,6 +231,35 @@ from test import models
 
 query = sort_apply(query=query, entity=models.UserInfo, obj=SortRequest(obj))
 ```
+### Comparison operators
+
+The list of the available comparison operators can be found below:
+
+- `is` (aliases: `==`, `eq`)
+- `is_not` (aliases: `!=`, `ne`)
+- `is_null`
+- `is_not_null`
+- `>` (alias: `gt`)
+- `<` (alias: `lt`)
+- `>=` (alias: `ge`)
+- `<=` (alias: `le`)
+- `like`
+- `not_like`
+- `ilike`
+- `not_ilike`
+- `in`
+- `not_in`
+- `contains`
+- `any`
+- `match`
+- `starts_with`
+
+#### PostgreSQL specific JSON operators
+
+- `@>`
+- `<@`
+- `@?`
+- `@@`
 
 ## Versions tested
 
