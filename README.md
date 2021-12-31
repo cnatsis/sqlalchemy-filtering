@@ -12,6 +12,7 @@
     - [Comparison operators](#comparison-operators)
       - [PostgreSQL specific JSON operators](#postgresql-specific-json-operators)
   - [Versions tested](#versions-tested)
+  - [Install](#install)
 
 ## Purpose
 
@@ -269,3 +270,9 @@ The list of the available comparison operators can be found below:
 | MySQL      | 8.0.20, 8.0.27 |
 | SQLite     | 3.37           |
 | SQLAlchemy | >= 1.4.0       |
+
+## Install
+
+This Python project is available in the PyPi package index and can be installed using `pip`. 
+
+`pip install sqlalchemy-filtering==0.1.2`
