@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="sqlalchemy-filtering",
-    version="0.1.0",
+    version="0.1.2",
     author="Christos Natsis",
     author_email="christos_na@hotmail.com",
     description="SQLAlchemy query filtering and sorting wrapper in JSON format.",
@@ -28,8 +28,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Topic :: Database",
     ],
-    package_dir={"": "sqlalchemy_filtering"},
-    packages=setuptools.find_packages(where="sqlalchemy_filtering"),
+    packages=["sqlalchemy_filtering"],
     python_requires=">=3.6",
     license='Apache License, Version 2.0',
 )
