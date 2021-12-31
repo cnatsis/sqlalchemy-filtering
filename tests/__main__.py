@@ -5,8 +5,8 @@ from sqlalchemy_filtering.filter_util import filter_apply
 from sqlalchemy_filtering.operators import SQLDialect
 from sqlalchemy_filtering.sort_util import sort_apply
 from sqlalchemy_filtering.validators import FilterRequest, SortRequest
-from test import models2
-from test.session import init_db, destroy_db, get_db
+from tests import models2
+from tests.session import init_db, destroy_db, get_db
 
 obj = {
     "filter": [
@@ -16,32 +16,32 @@ obj = {
         #     "node": "user_details",
         #     "operator": "@>",
         #     # "valueType": "jsonb",
-        #     "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
+        #     "value": "[{\"skill\":\"Fighting\",\"rating\":10}]"
         # }
         # ,
         # {
         #     ## (PostgreSQL) It works and returns all users that have skill Fighting with rank 10
         #     "field": "details",
         #     "node": "user_details",
-        #     "operator": "==",
+        #     "operator": "@>",
         #     # "valueType": "jsonb",
         #     "value": "[{\"skill\":\"Fighting\",\"rating\":10}]",
         # }
         # ,
-        # {
-        #     ## (PostgreSQL) It works and returns all users that have skill Fighting and any rating (in any skill) with rank 10
-        #     "field": "details",
-        #     "node": "user_details",
-        #     "operator": "@>",
-        #     # "valueType": "jsonb",
-        #     "value": "[{\"skill\":\"Fighting\"},{\"rating\":10}]",
-        # }
+        {
+            ## (PostgreSQL) It works and returns all users that have skill Fighting and any rating (in any skill) with rank 10
+            "field": "details",
+            "node": "user_details",
+            "operator": "@>",
+            # "valueType": "jsonb",
+            "value": "[{\"skill\":\"Fighting\"},{\"rating\":10}]",
+        }
         # ,
         # {
         #     "field": "details",
         #     "node": "user_details",
         #     "value": {
-        #             "json_field": "details",
+        #             "field": "details",
         #             "node": "rating",
         #             "operator": ">",
         #             "value": 7.2
@@ -173,8 +173,8 @@ if __name__ == '__main__':
     db = SessionLocal()
 
     query = db.query(models2.UserInfo)
-    query = filter_apply(query=query, entity=models2.UserInfo, obj=FilterRequest(obj4), dialect=SQLDialect.POSTGRESQL)
-    query = sort_apply(query=query, entity=models2.UserInfo, obj=SortRequest(obj4))
+    query = filter_apply(query=query, entity=models2.UserInfo, obj=FilterRequest(obj), dialect=SQLDialect.POSTGRESQL)
+    query = sort_apply(query=query, entity=models2.UserInfo, obj=SortRequest(obj))
 
     # query = db.query(models2.Ratings)
     # query = filter_apply(query=query, entity=models2.Ratings, obj=FilterRequest(obj3))

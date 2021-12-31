@@ -1,2 +1,5 @@
-sqlalchemy==1.4.25
+sqlalchemy==1.4.0
 psycopg2==2.8.6
+pysqlite3==0.4.6
+mysqlclient==2.1.0
+pymysql

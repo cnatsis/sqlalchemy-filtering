@@ -31,8 +31,8 @@ def init_db():
     conn = None
     try:
         conn = sqlite3.connect(db_filename)
-        print(open('../test/sql/tables.sql').read().strip())
-        conn.executescript(open('../test/sql/tables.sql').read().strip())
+        print(open('sql/postgresql_tables.sql').read().strip())
+        conn.executescript(open('sql/postgresql_tables.sql').read().strip())
         conn.commit()
     except Error as e:
         print(e)

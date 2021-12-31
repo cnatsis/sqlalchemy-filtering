@@ -66,10 +66,10 @@ class Ratings(Base):
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from test import models
+from tests import models
 
 engine = create_engine(
-    'postgresql://postgres:password@localhost:5432/filter'
+  'postgresql://postgres:password@localhost:5432/filter'
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -151,7 +151,7 @@ from sqlalchemy_filtering.filter_util import filter_apply
 from sqlalchemy_filtering.operators import SQLDialect
 from sqlalchemy_filtering.validators import FilterRequest
 
-from test import models
+from tests import models
 
 query = filter_apply(query=query, entity=models.UserInfo, obj=FilterRequest(obj), dialect=SQLDialect.POSTGRESQL)
 ```
@@ -227,7 +227,7 @@ obj = {
 from sqlalchemy_filtering.sort_util import sort_apply
 from sqlalchemy_filtering.validators import SortRequest
 
-from test import models
+from tests import models
 
 query = sort_apply(query=query, entity=models.UserInfo, obj=SortRequest(obj))
 ```
@@ -268,4 +268,4 @@ The list of the available comparison operators can be found below:
 | PostgreSQL | 9.2, 12.7      |
 | MySQL      | 8.0.20, 8.0.27 |
 | SQLite     | 3.37           |
-| SQLAlchemy | 1.4.25         |
+| SQLAlchemy | >= 1.4.0       |
