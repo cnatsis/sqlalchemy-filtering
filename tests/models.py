@@ -1,7 +1,6 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, UniqueConstraint, inspect
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import functions
 
 Base = declarative_base()
@@ -12,26 +11,28 @@ def compile_query_postgres(query):
     return str(query.statement.compile(dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}))
 
 
+def compile_query_mysql(query):
+    from sqlalchemy.dialects import mysql
+    return str(query.statement.compile(dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}))
 
-class Patient(Base):
-    __tablename__ = "patient"
+
+def compile_query_sqlite(query):
+    from sqlalchemy.dialects import sqlite
+    return str(query.statement.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
+
+
+class UserInfo(Base):
+    __tablename__ = "user_info"
 
     id = Column(Integer, primary_key=True, index=True)
-    demographics = Column(JSONB)
-    creation_date = Column(DateTime, nullable=False, server_default=functions.now())
-
-    diagnoses = relationship("Diagnosis", back_populates="patient")
-
-
-class Diagnosis(Base):
-    __tablename__ = "diagnosis"
-
-    id = Column(Integer, primary_key=True, index=True)
-    patient_id = Column(Integer, ForeignKey("patient.id"))
-    diagnosis_type_id = Column(Integer, ForeignKey("configuration.id"), nullable=False)
     details = Column(JSONB)
     creation_date = Column(DateTime, nullable=False, server_default=functions.now())
-    previous_diagnosis = Column(Integer, nullable=True)
 
-    patient = relationship("Patient", back_populates="diagnoses")
 
+class Ratings(Base):
+    __tablename__ = "ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    creation_date = Column(DateTime, nullable=False, server_default=functions.now())
+    movie_name = Column(String)
+    rating = Column(Float)
